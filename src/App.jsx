@@ -145,7 +145,7 @@ const CHECKOUT_TEMPLATE = {
   },
   "16×20": {
     "Print (Flat)": "",
-    "Framed Print": "",
+    "Framed Print": " https://buy.stripe.com/6oUbJ11Ua80zfwD45t6kg01",
   },
 };
 
