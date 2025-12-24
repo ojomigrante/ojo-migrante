@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag,
@@ -36,7 +36,6 @@ const driveUrls = (fileId, resourceKey) => {
     `https://drive.usercontent.google.com/download?id=${fileId}&export=download${rk}&authuser=0`,
   ];
 };
-const driveImage = (fileId, resourceKey) => driveUrls(fileId, resourceKey)[0];
 
 // ---------------------------------------------------------------------------
 // Brand / site config
@@ -51,7 +50,8 @@ const BRAND = {
     "Archival-quality prints • Signed & numbered • Ships in 3-5 business days",
 
   // Optional fallback link (used only if a product-specific link is missing)
-  checkoutUrl: "https://buy.stripe.com/your-payment-link", // optional fallback
+  // NOTE: best practice is to keep this null so missing links surface during testing.
+  checkoutUrl: null,
 
   // Logo hosted on Google Drive (must be public)
   logoFileId: "1LRjqEfsH5RDg5hKNhHo8XmoAsAJNUOiU",
@@ -134,246 +134,447 @@ function WatermarkedImg({
 // ---------------------------------------------------------------------------
 // Products
 // ---------------------------------------------------------------------------
-const CHECKOUT_TEMPLATE = {
-  "8×10": {
-    "Print (Flat)": "",
-    "Framed Print": "",
-  },
-  "11×14": {
-    "Print (Flat)": "",
-    "Framed Print": "",
-  },
-  "16×20": {
-    "Print (Flat)": "",
-    "Framed Print": " https://buy.stripe.com/6oUbJ11Ua80zfwD45t6kg01",
-  },
-};
+
+// IMPORTANT: UI prices MUST match Stripe Payment Links.
+// We derive prices from your existing base priceBySize + framed add-on, computed from those Stripe totals.
 
 const PRODUCTS = [
   {
     id: "p1",
     title: "silencio en la sala",
     series: "Street",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZajVKMlM5aTQ0UTA", "0-FzrrgJJuvVcFZxjo4VDYrQ"),
-    image: driveImage("0BwmebwPL59fZajVKMlM5aTQ0UTA", "0-FzrrgJJuvVcFZxjo4VDYrQ"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p1%20_silencio%20en%20la%20sala_.jpg",
+    ],
     description:
-      "Un grupo de estudiantes rehearse in silence, focused en la disciplina del cuerpo y la repetición del gesto.",
+      "Un grupo de estudiantes rehearse in silence, focused en la disciplina del cuerpo y la repetición del gesto. La imagen observa stillness within movement y la atención compartida que construye el espacio.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    // Stripe totals imply framed add-ons of +80/+110/+160
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/5kQfZh42i1Cb1FN9pN6kg00",
+        "Framed Print": "https://buy.stripe.com/fZuaEXgP4cgP1FNatR6kg0e",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/8x2cN5gP40y7dovfOb6kg0a",
+        "Framed Print": "https://buy.stripe.com/eVq14ncyO94Ddov0Th6kg0b",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/3cI4gz8iy94DfwDdG36kg0d",
+        "Framed Print": "https://buy.stripe.com/cNieVdeGW5SracjfOb6kg0c",
+      },
+    },
   },
   {
     id: "p2",
     title: "en la entrada",
     series: "Landscape",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZaE9VS0tnQmJZMFE", "0-eusc5w48_SJiUu4MOOpFEQ"),
-    image: driveImage("0BwmebwPL59fZaE9VS0tnQmJZMFE", "0-eusc5w48_SJiUu4MOOpFEQ"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p2%20_en%20la%20entrada.jpg",
+    ],
     description:
-      "Two men pause en la entrada of a home, ocupando el threshold entre vida privada y espacio público.",
+      "Two men pause en la entrada of a home, ocupando el threshold entre vida privada y espacio público. The doorway becomes un lugar de conversación, descanso, y tiempo compartido.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/eVqdR9gP41Cb84b59x6kg0f",
+        "Framed Print": "https://buy.stripe.com/14AdR98iybcL5W3bxV6kg0h",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/6oU9ATfL0cgP70731p6kg0j",
+        "Framed Print": "https://buy.stripe.com/5kQ3cvcyO5Sr0BJ0Th6kg0g",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/28E4gz8iybcLfwDfOb6kg0i",
+        "Framed Print": "https://buy.stripe.com/00wcN5dCS4On7076dB6kg0k",
+      },
+    },
   },
   {
     id: "p3",
     title: "sombra detenida",
     series: "Portrait",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZZjlUeC1ZOGs1TkE", "0-c2idA--3DTfygmYQ-rAPIg"),
-    image: driveImage("0BwmebwPL59fZZjlUeC1ZOGs1TkE", "0-c2idA--3DTfygmYQ-rAPIg"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p3%20_sombre%20detenida_.jpg",
+    ],
     description:
-      "A child stands en la entrada de un local cerrado, paused between light and shadow.",
+      "A child stands en la entrada de un local cerrado, paused between light and shadow. The street se hace en una sala de espera, where time passes and no pasa nada.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/4gM3cvfL0a8Hesz9pN6kg0l",
+        "Framed Print": "https://buy.stripe.com/fZu8wP2Ye5SrfwD7hF6kg0o",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/aFaeVdeGWcgP2JR31p6kg0m",
+        "Framed Print": "https://buy.stripe.com/3cI7sLaqG80zckr8lJ6kg0p",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/00w7sLgP43KjeszgSf6kg0n",
+        "Framed Print": "https://buy.stripe.com/8x27sL42i94D84b59x6kg0q",
+      },
+    },
   },
   {
     id: "p4",
     title: "bajo observación",
     series: "Black & White",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZcW5vVWszZ0xoRnc", "0-q_kQFpzc3MHz7PdqmdcOJg"),
-    image: driveImage("0BwmebwPL59fZcW5vVWszZ0xoRnc", "0-q_kQFpzc3MHz7PdqmdcOJg"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p4%20_bajo%20observacion_.jpg",
+    ],
     description:
-      "Police officers pause inside a patrol car as la vida continúa alrededor.",
+      "Police officers pasen inside a patrol car, paused and observing as la vida continúa alrededor.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/6oUfZhfL0ft1ckr45t6kg0r",
+        "Framed Print": "https://buy.stripe.com/14A00jeGW0y7ckreK76kg0u",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/9B6fZh42ieoX5W39pN6kg0s",
+        "Framed Print": "https://buy.stripe.com/cNi28r56ma8Hesz31p6kg0v",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/6oU14naqG0y7eszcBZ6kg0t",
+        "Framed Print": "https://buy.stripe.com/bJeaEX56m3Kj0BJdG36kg0w",
+      },
+    },
   },
   {
     id: "p5",
     title: "peso justo",
     series: "Black & White",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZYmlRSlR2b21PVFU", "0-nlcngwD9BVsO9c4ZEzUlsg"),
-    image: driveImage("0BwmebwPL59fZYmlRSlR2b21PVFU", "0-nlcngwD9BVsO9c4ZEzUlsg"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p5%20_peso%20justo_.jpg",
+    ],
     description:
-      "A street vendor pesa fruta en una balanza improvisada.",
+      "A street vendor pesa fruta en una balanza improvisada, while a passerby moves through the frame.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/cNi14ngP4ft184bgSf6kg0x",
+        "Framed Print": "https://buy.stripe.com/aFa3cvdCS3Kj2JR6dB6kg0A",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/8x27sL7eu94D1FN31p6kg0y",
+        "Framed Print": "https://buy.stripe.com/bJe9ATfL02Gf4RZ0Th6kg0B",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/8x200jeGW4Onesz8lJ6kg0z",
+        "Framed Print": "https://buy.stripe.com/aFa9AT56m1Cb0BJ6dB6kg0C",
+      },
+    },
   },
   {
     id: "p6",
     title: "antes del proximo destino",
     series: "Street",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZcWZVZl9sUVd0eDA", "0-d0VuHWbjPh4RrBhQus_I7Q"),
-    image: driveImage("0BwmebwPL59fZcWZVZl9sUVd0eDA", "0-d0VuHWbjPh4RrBhQus_I7Q"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p6%20_antes%20del%20proximo%20destino_.jpg",
+    ],
     description:
-      "A man pauses inside a car between routes and labor.",
+      "A man works dentro un carro between routes and work. The body folds inward, carrying el peso del dia, while the road le espera afuera.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/5kQ00j9mC6Wv4RZcBZ6kg0D",
+        "Framed Print": "https://buy.stripe.com/4gMdR99mC0y75W31Xl6kg0G",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/aFa7sL6aqcgP4RZ0Th6kg0E",
+        "Framed Print": "https://buy.stripe.com/14AfZh8iy3Kjacj45t6kg0H",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/4gM9AT0Q694Dacj0Th6kg0F",
+        "Framed Print": "https://buy.stripe.com/9B6aEXgP41Cb4RZ6dB6kg0I",
+      },
+    },
   },
   {
     id: "p7",
     title: "descanso en transito",
     series: "Street",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2024,
-    imageSrcs: driveUrls("0BwmebwPL59fZR3JNV2ZfSWZ6Mmc", "0-ala5VykvDwH7mP-5PlHk-w"),
-    image: driveImage("0BwmebwPL59fZR3JNV2ZfSWZ6Mmc", "0-ala5VykvDwH7mP-5PlHk-w"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p7%20_descanso%20en%20transito_.jpg",
+    ],
     description:
-      "Un viejito rests against la acera before continuing on.",
+      "Un viejito sits along la acera, taking a brief rest between work and movement. The body pauses against the wall, while la calle sigue adelante.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/3cIbJ1eGWft15W39pN6kg0J",
+        "Framed Print": "https://buy.stripe.com/6oU00j42igx5acjbxV6kg0M",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/9B614neGW80z0BJbxV6kg0K",
+        "Framed Print": "https://buy.stripe.com/28EbJ12Yea8H3NV59x6kg0N",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/8x2bJ19mCa8H1FN1Xl6kg0L",
+        "Framed Print": "https://buy.stripe.com/eVq14nbuK0y7ckr6dB6kg0O",
+      },
+    },
   },
   {
     id: "p8",
     title: "turno en marcha",
     series: "Fine Art",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZZV9sN1UxN0F6dmc", "0-DbcYm4TMdIO6fGzfAqN4gg"),
-    image: driveImage("0BwmebwPL59fZZV9sN1UxN0F6dmc", "0-DbcYm4TMdIO6fGzfAqN4gg"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p8%20_turno%20en%20marcha_.jpg",
+    ],
     description:
-      "A bus driver pauses at the window as the route continues.",
+      "A bus driver pauses at the window, trabajando while the route continues.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/aFa9AT42i94DacjbxV6kg0P",
+        "Framed Print": "https://buy.stripe.com/3cI9ATdCScgPgAHgSf6kg0S",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/28E8wPdCS94D4RZ7hF6kg0Q",
+        "Framed Print": "https://buy.stripe.com/fZu8wPgP45Srckr7hF6kg0T",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/14A7sLgP41Cbacj31p6kg0R",
+        "Framed Print": "https://buy.stripe.com/8x23cv7eu4OnbgngSf6kg0U",
+      },
+    },
   },
   {
     id: "p9",
     title: "juego en la calle",
     series: "Portrait",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2023,
-    imageSrcs: driveUrls("0BwmebwPL59fZVUE5Qk55NzJ6em8", "0-UtKc6BzYX5-luQpfJalUDg"),
-    image: driveImage("0BwmebwPL59fZVUE5Qk55NzJ6em8", "0-UtKc6BzYX5-luQpfJalUDg"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p9%20_juego%20en%20la%20calle_.jpg",
+    ],
     description:
-      "A child waits in the street between play and stillness.",
+      "A child stands en la calle holding a bat, paused between play and waiting. The street becomes un espacio de juego, shaped by imagination and everyday life.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/00w8wP0Q6cgP2JRfOb6kg0V",
+        "Framed Print": "https://buy.stripe.com/dRm6oHfL04On1FNbxV6kg0Y",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/eVq14n7eu0y798feK76kg0W",
+        "Framed Print": "https://buy.stripe.com/aFadR9eGWdkTacjbxV6kg0Z",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/cNi28r8iycgPacjfOb6kg0X",
+        "Framed Print": "https://buy.stripe.com/00w00jbuKa8H2JR31p6kg10",
+      },
+    },
   },
   {
     id: "p10",
     title: "la jugada sigue",
     series: "Black & White",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZX09CNC0zZ2xyVnM", "0-4posO9UUyIgVsxmcbHm0Hw"),
-    image: driveImage("0BwmebwPL59fZX09CNC0zZ2xyVnM", "0-4posO9UUyIgVsxmcbHm0Hw"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p10%20_la%20jugada%20sigue_.jpg",
+    ],
     description:
-      "Two young men play fútbol en una cancha improvisada.",
+      "Two young men play fútbol en una cancha improvisada, moving across open ground. The city frames the action, while play becomes practice for ritmo, espacio y seguir adelante.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/6oU3cvgP4dkT84b45t6kg11",
+        "Framed Print": "https://buy.stripe.com/5kQbJ1eGWcgP3NV1Xl6kg14",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/28EfZh42i94DbgnfOb6kg12",
+        "Framed Print": "https://buy.stripe.com/8x29AT8iy5Sracj9pN6kg15",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/00w14n1Ua3Kjesz8lJ6kg13",
+        "Framed Print": "https://buy.stripe.com/00w14n42idkTacjfOb6kg16",
+      },
+    },
   },
   {
     id: "p11",
     title: "tiempo compartido",
     series: "Street",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZTHJzRFZpejVZTWs", "0-GLZsGQ6s7-NdtVuN9RP2gg"),
-    image: driveImage("0BwmebwPL59fZTHJzRFZpejVZTWs", "0-GLZsGQ6s7-NdtVuN9RP2gg"),
-    description:
-      "Two people wait en la banca mientras la ciudad sigue.",
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p11%20_tiempo%20compartido_.jpg",
+    ],
+    description: "Two people wait en la banca, as the city speaks around them.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/5kQ14nbuKgx598f45t6kg17",
+        "Framed Print": "https://buy.stripe.com/9B6aEX9mC1Cb5W3fOb6kg1a",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/5kQcN5eGWdkTdov8lJ6kg18",
+        "Framed Print": "https://buy.stripe.com/4gM7sL8iydkTgAH0Th6kg1b",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/bJe6oH1Ua94D3NVdG36kg19",
+        "Framed Print": "https://buy.stripe.com/8x228r42i4On2JRgSf6kg1c",
+      },
+    },
   },
   {
     id: "p12",
     title: "vintage con sazón",
     series: "Landscape",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZUXNPUXJUQ09nWTQ", "0-wWq9CqejFXJt-x7FKOQfBA"),
-    image: driveImage("0BwmebwPL59fZUXNPUXJUQ09nWTQ", "0-wWq9CqejFXJt-x7FKOQfBA"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p12%20_vintage%20con%20sazon_.jpg",
+    ],
     description:
-      "Un clásico rodando por las calles, lleno de historia.",
+      "Un clásico que sigue rodando por las calles, full of history, orgullo y timeless vibes.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/dRm6oHcyO6Wv98feK76kg1d",
+        "Framed Print": "https://buy.stripe.com/aFabJ17eudkTckrdG36kg1g",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/14AcN5gP4eoXacj1Xl6kg1e",
+        "Framed Print": "https://buy.stripe.com/00weVd9mCft1acjgSf6kg1h",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/9B6aEXgP494D3NV31p6kg1f",
+        "Framed Print": "https://buy.stripe.com/3cIcN5buK1Cbckr6dB6kg1i",
+      },
+    },
   },
   {
     id: "p13",
     title: "colores que nunca se apagan",
     series: "Landscape",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZQmp5U0MtYlMxeUU", "0-yXzrR_VHI9wd6-g6fB5gig"),
-    image: driveImage("0BwmebwPL59fZQmp5U0MtYlMxeUU", "0-yXzrR_VHI9wd6-g6fB5gig"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p13%20_colores%20que%20no%20se%20apagan_.jpg",
+    ],
     description:
-      "Colores vivos que siguen brillando a través del tiempo.",
+      "Clásicos alineados en la calle, each one con su propio flow y decades of history shining through chrome and color.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/14AfZh6aq6Wv4RZfOb6kg1j",
+        "Framed Print": "https://buy.stripe.com/aFa3cvaqGa8H3NV59x6kg1m",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/8x24gzaqG94D5W38lJ6kg1k",
+        "Framed Print": "https://buy.stripe.com/4gM3cv0Q6a8Hbgn31p6kg1n",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/aFa6oHaqGgx50BJcBZ6kg1l",
+        "Framed Print": "https://buy.stripe.com/bJe28r6aq80zesz9pN6kg1o",
+      },
+    },
   },
   {
     id: "p14",
     title: "entre historia y pan diario",
     series: "Fine Art",
-    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
     sizes: ["8×10", "11×14", "16×20"],
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls("0BwmebwPL59fZTll1Q0kyRVR0WE0", "0-gxlp3Xh0CzQto-k2TKJnsw"),
-    image: driveImage("0BwmebwPL59fZTll1Q0kyRVR0WE0", "0-gxlp3Xh0CzQto-k2TKJnsw"),
+    imageSrcs: [
+      "https://ik.imagekit.io/kkyqx5mlc/ojo%20full%20photo%20/p14%20_%20entre%20historia%20y%20pan%20diario_.jpg",
+    ],
     description:
-      "La vida cotidiana avanza mientras la historia observa.",
+      "la vida sigue su ritmo mientras la historia observa -- un contraste poderoso entre the present and the eternal.",
     shipping: "Ships flat with protective packaging.",
-    checkoutLinks: CHECKOUT_TEMPLATE,
+    priceBySize: { "8×10": 180, "11×14": 185, "16×20": 200 },
+    frameAddOnBySize: { "8×10": 80, "11×14": 110, "16×20": 160 },
+    checkoutLinks: {
+      "8×10": {
+        "Print (Flat)": "https://buy.stripe.com/4gM3cv6aqeoX98fgSf6kg1p",
+        "Framed Print": "https://buy.stripe.com/6oUbJ10Q60y7bgn6dB6kg1s",
+      },
+      "11×14": {
+        "Print (Flat)": "https://buy.stripe.com/28E3cv56m4On3NV6dB6kg1q",
+        "Framed Print": "https://buy.stripe.com/eVq4gzgP44Onckr31p6kg1t",
+      },
+      "16×20": {
+        "Print (Flat)": "https://buy.stripe.com/9B63cvfL094Ddov0Th6kg1r",
+        "Framed Print": "https://buy.stripe.com/eVq8wPcyOeoXckr0Th6kg1u",
+      },
+    },
   },
+];
+
 const SERIES = ["All", ...Array.from(new Set(PRODUCTS.map((p) => p.series)))];
 
 function formatUSD(amount) {
@@ -387,20 +588,9 @@ function formatUSD(amount) {
 const FULFILLMENT_OPTIONS = ["Print (Flat)", "Framed Print"];
 const DEFAULT_FULFILLMENT = FULFILLMENT_OPTIONS[0];
 
-// Default framing add-ons (edit anytime)
-const DEFAULT_FRAME_ADDON_BY_SIZE = {
-  "8×10": 80,
-  "11×14": 110,
-  "16×20": 160,
-  "24×36": 240,
-};
-
 function getFrameAddon(product, size) {
   const bySize = product?.frameAddOnBySize;
   if (bySize && size && bySize[size] != null) return Number(bySize[size]);
-  if (size && DEFAULT_FRAME_ADDON_BY_SIZE[size] != null) {
-    return Number(DEFAULT_FRAME_ADDON_BY_SIZE[size]);
-  }
   return 0;
 }
 
@@ -431,10 +621,7 @@ function getFromPrice(product) {
 function getCheckoutUrl(product, size, fulfillment) {
   const link = product?.checkoutLinks?.[size]?.[fulfillment];
   if (typeof link === "string" && link.startsWith("http")) return link;
-  if (
-    typeof BRAND.checkoutUrl === "string" &&
-    BRAND.checkoutUrl.startsWith("http")
-  ) {
+  if (typeof BRAND.checkoutUrl === "string" && BRAND.checkoutUrl.startsWith("http")) {
     return BRAND.checkoutUrl;
   }
   return null;
@@ -452,13 +639,7 @@ function Pill({ children }) {
   );
 }
 
-function Button({
-  children,
-  onClick,
-  disabled,
-  variant = "primary",
-  className = "",
-}) {
+function Button({ children, onClick, disabled, variant = "primary", className = "" }) {
   const base =
     "inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm transition shadow-sm";
   const styles =
@@ -472,9 +653,7 @@ function Button({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${styles} ${
-        disabled ? "opacity-50 cursor-not-allowed" : ""
-      } ${className}`}
+      className={`${base} ${styles} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
       type="button"
     >
       {children}
@@ -482,7 +661,32 @@ function Button({
   );
 }
 
+function useLockBodyScroll(locked) {
+  useEffect(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [locked]);
+}
+
+function useEscapeKey(enabled, onEscape) {
+  useEffect(() => {
+    if (!enabled) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") onEscape?.();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [enabled, onEscape]);
+}
+
 function Drawer({ open, onClose, title, children }) {
+  useEscapeKey(open, onClose);
+  useLockBodyScroll(open);
+
   return (
     <AnimatePresence>
       {open ? (
@@ -521,6 +725,9 @@ function Drawer({ open, onClose, title, children }) {
 }
 
 function Modal({ open, onClose, children }) {
+  useEscapeKey(open, onClose);
+  useLockBodyScroll(open);
+
   return (
     <AnimatePresence>
       {open ? (
@@ -570,8 +777,7 @@ function useCart() {
   const add = (product, size, fulfillment) => {
     setItems((prev) => {
       const idx = prev.findIndex(
-        (i) =>
-          i.id === product.id && i.size === size && i.fulfillment === fulfillment
+        (i) => i.id === product.id && i.size === size && i.fulfillment === fulfillment
       );
       if (idx >= 0) {
         const copy = [...prev];
@@ -594,14 +800,7 @@ function useCart() {
 
   const remove = (id, size, fulfillment) => {
     setItems((prev) =>
-      prev.filter(
-        (i) =>
-          !(
-            i.id === id &&
-            i.size === size &&
-            i.fulfillment === fulfillment
-          )
-      )
+      prev.filter((i) => !(i.id === id && i.size === size && i.fulfillment === fulfillment))
     );
   };
 
@@ -617,10 +816,7 @@ function useCart() {
 
   const clear = () => setItems([]);
 
-  const subtotal = useMemo(
-    () => items.reduce((sum, i) => sum + i.price * i.qty, 0),
-    [items]
-  );
+  const subtotal = useMemo(() => items.reduce((sum, i) => sum + i.price * i.qty, 0), [items]);
   const count = useMemo(() => items.reduce((sum, i) => sum + i.qty, 0), [items]);
 
   return { items, add, remove, setQty, clear, subtotal, count };
@@ -634,8 +830,7 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [detail, setDetail] = useState(null); // product
   const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedFulfillment, setSelectedFulfillment] =
-    useState(DEFAULT_FULFILLMENT);
+  const [selectedFulfillment, setSelectedFulfillment] = useState(DEFAULT_FULFILLMENT);
 
   const cart = useCart();
 
@@ -648,8 +843,8 @@ export default function App() {
         p.series.toLowerCase().includes(q) ||
         String(p.year).includes(q);
       const matchesSeries = series === "All" || p.series === series;
-      const matchesAvail = availability === "All" || p.inStock;
-      return matchesQuery && matchesSeries && matchesAvail;
+      const matchesAvail = availability === "All" || availability === "In stock" ? p.inStock : true;
+      return matchesQuery && matchesSeries && (availability === "All" ? true : p.inStock);
     });
 
     if (sort === "Price: Low") list = [...list].sort((a, b) => getFromPrice(a) - getFromPrice(b));
@@ -715,28 +910,16 @@ export default function App() {
           </a>
 
           <div className="hidden items-center gap-2 md:flex">
-            <a
-              href="#shop"
-              className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10"
-            >
+            <a href="#shop" className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10">
               Shop
             </a>
-            <a
-              href="#about"
-              className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10"
-            >
+            <a href="#about" className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10">
               About
             </a>
-            <a
-              href="#faq"
-              className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10"
-            >
+            <a href="#faq" className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10">
               FAQ
             </a>
-            <a
-              href="#contact"
-              className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10"
-            >
+            <a href="#contact" className="rounded-2xl px-3 py-2 text-sm text-white/80 hover:bg-white/10">
               Contact
             </a>
           </div>
@@ -745,9 +928,7 @@ export default function App() {
             <ShoppingBag className="h-4 w-4" />
             Cart
             {cart.count > 0 ? (
-              <span className="ml-1 rounded-full bg-white/10 px-2 py-0.5 text-xs">
-                {cart.count}
-              </span>
+              <span className="ml-1 rounded-full bg-white/10 px-2 py-0.5 text-xs">{cart.count}</span>
             ) : null}
           </Button>
         </div>
@@ -766,33 +947,23 @@ export default function App() {
               Photographs que se sienten como recuerdos.
             </motion.h1>
             <p className="mt-4 max-w-prose text-white/70">
-              Curated collections of street, landscape, and fine art photography —
-              printed with archival pigment inks and made to last.
+              Curated collections of street, landscape, and fine art photography — printed with archival pigment inks
+              and made to last.
             </p>
 
             <div className="mt-4 max-w-prose rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
-              <span className="font-medium">Limited edition</span> — cada foto
-              está firmada, fechada y numerada, y viene con un mensaje personal
-              de agradecimiento del fotógrafo.{" "}
-              <span className="font-medium">No reprints.</span> Once it’s gone,
-              it’s gone.
+              <span className="font-medium">Limited edition</span> — cada foto está firmada, fechada y numerada, y
+              viene con un mensaje personal de agradecimiento del fotógrafo. <span className="font-medium">No reprints.</span>{" "}
+              Once it’s gone, it’s gone.
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                onClick={() =>
-                  document
-                    .getElementById("shop")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
+              <Button onClick={() => document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })}>
                 Browse prints <ArrowRight className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
-                onClick={() =>
-                  window.open(BRAND.instagram, "_blank", "noopener,noreferrer")
-                }
+                onClick={() => window.open(BRAND.instagram, "_blank", "noopener,noreferrer")}
               >
                 <Instagram className="h-4 w-4" />
                 Instagram
@@ -806,11 +977,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <SmartImg
-              srcs={PRODUCTS[1]?.imageSrcs ?? PRODUCTS[1]?.image}
-              alt="Featured print"
-              className="h-full w-full object-cover"
-            />
+            <SmartImg srcs={PRODUCTS[1]?.imageSrcs ?? PRODUCTS[1]?.image} alt="Featured print" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <div className="text-sm text-white/70">Featured</div>
@@ -829,9 +996,7 @@ export default function App() {
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="text-2xl font-semibold">Shop prints</h2>
-            <p className="mt-1 text-sm text-white/60">
-              Search, filter, and open any piece for sizing and edition details.
-            </p>
+            <p className="mt-1 text-sm text-white/60">Search, filter, and open any piece for sizing and edition details.</p>
           </div>
 
           <div className="grid w-full gap-2 md:w-auto md:grid-cols-2">
@@ -859,6 +1024,7 @@ export default function App() {
                   ))}
                 </select>
               </div>
+
               <div className="hidden md:flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
                 <select
                   value={availability}
@@ -873,19 +1039,14 @@ export default function App() {
                   </option>
                 </select>
               </div>
+
               <div className="hidden md:flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="bg-transparent text-sm outline-none"
-                >
-                  {["Featured", "Newest", "Price: Low", "Price: High"].map(
-                    (opt) => (
-                      <option key={opt} value={opt} className="bg-zinc-950">
-                        Sort: {opt}
-                      </option>
-                    )
-                  )}
+                <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent text-sm outline-none">
+                  {["Featured", "Newest", "Price: Low", "Price: High"].map((opt) => (
+                    <option key={opt} value={opt} className="bg-zinc-950">
+                      Sort: {opt}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -895,11 +1056,7 @@ export default function App() {
         {/* Mobile filters */}
         <div className="mb-6 flex gap-2 md:hidden">
           <div className="flex w-1/2 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-            <select
-              value={availability}
-              onChange={(e) => setAvailability(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none"
-            >
+            <select value={availability} onChange={(e) => setAvailability(e.target.value)} className="w-full bg-transparent text-sm outline-none">
               <option value="All" className="bg-zinc-950">
                 Availability: All
               </option>
@@ -909,18 +1066,12 @@ export default function App() {
             </select>
           </div>
           <div className="flex w-1/2 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none"
-            >
-              {["Featured", "Newest", "Price: Low", "Price: High"].map(
-                (opt) => (
-                  <option key={opt} value={opt} className="bg-zinc-950">
-                    Sort: {opt}
-                  </option>
-                )
-              )}
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="w-full bg-transparent text-sm outline-none">
+              {["Featured", "Newest", "Price: Low", "Price: High"].map((opt) => (
+                <option key={opt} value={opt} className="bg-zinc-950">
+                  Sort: {opt}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -958,9 +1109,7 @@ export default function App() {
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-white/60">From</div>
-                    <div className="text-lg font-semibold">
-                      {formatUSD(getFromPrice(p))}
-                    </div>
+                    <div className="text-lg font-semibold">{formatUSD(getFromPrice(p))}</div>
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -987,21 +1136,16 @@ export default function App() {
             <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
               <div className="text-white/80 font-medium">Archival quality</div>
               <p className="mt-2 text-sm text-white/60">
-                Prints use pigment inks and museum-grade papers for longevity and
-                consistent color.
+                Prints use pigment inks and museum-grade papers for longevity and consistent color.
               </p>
             </div>
             <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
               <div className="text-white/80 font-medium">Fair, simple pricing</div>
-              <p className="mt-2 text-sm text-white/60">
-                Transparent pricing and clear edition details — no surprises.
-              </p>
+              <p className="mt-2 text-sm text-white/60">Transparent pricing and clear edition details — no surprises.</p>
             </div>
             <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
               <div className="text-white/80 font-medium">Secure checkout</div>
-              <p className="mt-2 text-sm text-white/60">
-                Use Stripe payment links per piece/size/delivery (fast + simple).
-              </p>
+              <p className="mt-2 text-sm text-white/60">Use Stripe payment links per piece/size/delivery (fast + simple).</p>
             </div>
           </div>
         </div>
@@ -1030,10 +1174,7 @@ export default function App() {
                 a: "Sometimes. Email us with the piece name and desired dimensions — we’ll confirm feasibility and pricing.",
               },
             ].map((item) => (
-              <div
-                key={item.q}
-                className="rounded-3xl border border-white/10 bg-white/5 p-5"
-              >
+              <div key={item.q} className="rounded-3xl border border-white/10 bg-white/5 p-5">
                 <div className="font-medium">{item.q}</div>
                 <p className="mt-2 text-sm text-white/60">{item.a}</p>
               </div>
@@ -1048,9 +1189,7 @@ export default function App() {
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <h2 className="text-2xl font-semibold">Contact</h2>
-              <p className="mt-2 text-sm text-white/60">
-                Questions about editions, shipping, or commissions? Reach out.
-              </p>
+              <p className="mt-2 text-sm text-white/60">Questions about editions, shipping, or commissions? Reach out.</p>
               <div className="mt-6 flex flex-col gap-3">
                 <a
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:bg-white/10"
@@ -1074,19 +1213,13 @@ export default function App() {
             <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
               <div className="text-white/80 font-medium">Payments</div>
               <p className="mt-2 text-sm text-white/60">
-                “Buy now” opens the Stripe Payment Link for the selected size +
-                delivery option. Add links to each product’s <code>checkoutLinks</code>.
+                “Buy now” opens the Stripe Payment Link for the selected size + delivery option. Add links to each
+                product’s <code>checkoutLinks</code>.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Button
                   variant="ghost"
-                  onClick={() =>
-                    startCheckout(
-                      PRODUCTS[0],
-                      PRODUCTS[0]?.sizes?.[0] ?? "8×10",
-                      DEFAULT_FULFILLMENT
-                    )
-                  }
+                  onClick={() => startCheckout(PRODUCTS[0], PRODUCTS[0]?.sizes?.[0] ?? "8×10", DEFAULT_FULFILLMENT)}
                 >
                   Test checkout link <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -1102,9 +1235,7 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-10 md:flex-row md:items-center md:justify-between">
-          <div className="text-sm text-white/60">
-            © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
-          </div>
+          <div className="text-sm text-white/60">© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</div>
           <div className="flex flex-wrap items-center gap-2">
             <Pill>Secure packaging</Pill>
             <Pill>Archival inks</Pill>
@@ -1133,21 +1264,11 @@ export default function App() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
-                <div className="text-sm text-white/70">
-                  {detail.series} • {detail.year}
-                </div>
+                <div className="text-sm text-white/70">{detail.series} • {detail.year}</div>
                 <div className="text-2xl font-semibold">{detail.title}</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Pill>{detail.edition}</Pill>
-                  <Pill>
-                    {formatUSD(
-                      getUnitPrice(
-                        detail,
-                        selectedSize ?? detail.sizes?.[0],
-                        selectedFulfillment
-                      )
-                    )}
-                  </Pill>
+                  <Pill>{formatUSD(getUnitPrice(detail, selectedSize ?? detail.sizes?.[0], selectedFulfillment))}</Pill>
                 </div>
               </div>
             </div>
@@ -1161,9 +1282,7 @@ export default function App() {
               <p className="mt-4 text-sm text-white/70">{detail.description}</p>
 
               <div className="mt-5">
-                <div className="text-sm text-white/80 font-medium">
-                  Choose delivery
-                </div>
+                <div className="text-sm text-white/80 font-medium">Choose delivery</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {FULFILLMENT_OPTIONS.map((opt) => (
                     <button
@@ -1183,9 +1302,7 @@ export default function App() {
               </div>
 
               <div className="mt-5">
-                <div className="text-sm text-white/80 font-medium">
-                  Choose a size
-                </div>
+                <div className="text-sm text-white/80 font-medium">Choose a size</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {detail.sizes.map((s) => (
                     <button
@@ -1219,18 +1336,14 @@ export default function App() {
                 <Button onClick={addToCartFromModal} disabled={!detail.inStock}>
                   <ShoppingBag className="h-4 w-4" /> Add to cart
                 </Button>
-                <Button
-                  variant="ghost"
-                  onClick={buyNowFromModal}
-                  disabled={!detail.inStock}
-                >
+                <Button variant="ghost" onClick={buyNowFromModal} disabled={!detail.inStock}>
                   Buy now <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
 
               <div className="mt-4 text-xs text-white/50">
-                Note: Payment Links check out one item at a time. For a true cart
-                checkout, we’d switch to Stripe Checkout Sessions (backend).
+                Note: Payment Links check out one item at a time. For a true cart checkout, we’d switch to Stripe
+                Checkout Sessions (backend).
               </div>
             </div>
           </div>
@@ -1274,9 +1387,7 @@ export default function App() {
                       <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 p-1">
                         <button
                           className="rounded-xl p-2 hover:bg-white/10"
-                          onClick={() =>
-                            cart.setQty(i.id, i.size, i.fulfillment, i.qty - 1)
-                          }
+                          onClick={() => cart.setQty(i.id, i.size, i.fulfillment, i.qty - 1)}
                           type="button"
                           aria-label="Decrease quantity"
                         >
@@ -1285,9 +1396,7 @@ export default function App() {
                         <div className="w-8 text-center text-sm">{i.qty}</div>
                         <button
                           className="rounded-xl p-2 hover:bg-white/10"
-                          onClick={() =>
-                            cart.setQty(i.id, i.size, i.fulfillment, i.qty + 1)
-                          }
+                          onClick={() => cart.setQty(i.id, i.size, i.fulfillment, i.qty + 1)}
                           type="button"
                           aria-label="Increase quantity"
                         >
@@ -1297,9 +1406,7 @@ export default function App() {
 
                       <div className="flex items-center gap-2">
                         <div className="text-sm text-white/60">Line</div>
-                        <div className="font-semibold">
-                          {formatUSD(i.price * i.qty)}
-                        </div>
+                        <div className="font-semibold">{formatUSD(i.price * i.qty)}</div>
                       </div>
                     </div>
 
@@ -1313,10 +1420,7 @@ export default function App() {
                       >
                         Checkout this item <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => cart.remove(i.id, i.size, i.fulfillment)}
-                      >
+                      <Button variant="ghost" onClick={() => cart.remove(i.id, i.size, i.fulfillment)}>
                         Remove
                       </Button>
                     </div>
@@ -1327,13 +1431,9 @@ export default function App() {
               <div className="mt-5 rounded-3xl border border-white/10 bg-white/5 p-5">
                 <div className="flex items-center justify-between">
                   <div className="text-white/70">Subtotal</div>
-                  <div className="text-lg font-semibold">
-                    {formatUSD(cart.subtotal)}
-                  </div>
+                  <div className="text-lg font-semibold">{formatUSD(cart.subtotal)}</div>
                 </div>
-                <div className="mt-2 text-xs text-white/50">
-                  Taxes and shipping calculated at checkout.
-                </div>
+                <div className="mt-2 text-xs text-white/50">Taxes and shipping calculated at checkout.</div>
 
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button
