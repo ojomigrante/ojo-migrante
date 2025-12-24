@@ -4,7 +4,6 @@ import {
   ShoppingBag,
   Search,
   Filter,
-  Instagram,
   Mail,
   ArrowRight,
   X,
@@ -45,7 +44,6 @@ const BRAND = {
   tagline: "Limited-edition photographic prints.",
   location: "Boston, MA",
   email: "ojomigrante@gmail.com",
-  instagram: "https://instagram.com/ojomigrante",
   heroNote:
     "Archival-quality prints • Signed & numbered • Ships in 3-5 business days",
 
