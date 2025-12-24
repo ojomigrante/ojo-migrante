@@ -149,6 +149,7 @@ const CHECKOUT_TEMPLATE = {
   },
 };
 
+const PRODUCTS = [
   {
     id: "p1",
     title: "silencio en la sala",
@@ -158,33 +159,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZajVKMlM5aTQ0UTA",
-      "0-FzrrgJJuvVcFZxjo4VDYrQ"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZajVKMlM5aTQ0UTA",
-      "0-FzrrgJJuvVcFZxjo4VDYrQ"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZajVKMlM5aTQ0UTA", "0-FzrrgJJuvVcFZxjo4VDYrQ"),
+    image: driveImage("0BwmebwPL59fZajVKMlM5aTQ0UTA", "0-FzrrgJJuvVcFZxjo4VDYrQ"),
     description:
-      "Un grupo de estudiantes rehearse in silence, focused en la disciplina del cuerpo y la repetición del gesto. La imagen observa stillness within movement y la atención compartida que construye el espacio.",
+      "Un grupo de estudiantes rehearse in silence, focused en la disciplina del cuerpo y la repetición del gesto.",
     shipping: "Ships flat with protective packaging.",
-    // Add Stripe links here later:
-    // checkoutLinks: {
-  "8×10": {
-    "Print (Flat)": "https://buy.stripe.com/6oU4gz42ift1acjdG36kg09",
-    "Framed Print": "https://buy.stripe.com/cNiaEX1Uaa8H1FNgSf6kg07",
-  },
-  "11×14": {
-    "Print (Flat)": "https://buy.stripe.com/6oUfZh1Ua3Kj70759x6kg06",
-    "Framed Print": "https://buy.stripe.com/7sY6oHcyO3Kjckr1Xl6kg05",
-  },
-  "16×20": {
-    "Print (Flat)": "https://buy.stripe.com/7sYfZhaqG2Gf1FN9pN6kg03",
-    "Framed Print": " https://buy.stripe.com/6oUbJ11Ua80zfwD45t6kg01",
-  },
-},
-
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p2",
@@ -195,17 +175,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZaE9VS0tnQmJZMFE",
-      "0-eusc5w48_SJiUu4MOOpFEQ"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZaE9VS0tnQmJZMFE",
-      "0-eusc5w48_SJiUu4MOOpFEQ"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZaE9VS0tnQmJZMFE", "0-eusc5w48_SJiUu4MOOpFEQ"),
+    image: driveImage("0BwmebwPL59fZaE9VS0tnQmJZMFE", "0-eusc5w48_SJiUu4MOOpFEQ"),
     description:
-      "Two men pause en la entrada of a home, ocupando el threshold entre vida privada y espacio público. The doorway becomes un lugar de conversación, descanso, y tiempo compartido.",
+      "Two men pause en la entrada of a home, ocupando el threshold entre vida privada y espacio público.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p3",
@@ -216,17 +191,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZZjlUeC1ZOGs1TkE",
-      "0-c2idA--3DTfygmYQ-rAPIg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZZjlUeC1ZOGs1TkE",
-      "0-c2idA--3DTfygmYQ-rAPIg"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZZjlUeC1ZOGs1TkE", "0-c2idA--3DTfygmYQ-rAPIg"),
+    image: driveImage("0BwmebwPL59fZZjlUeC1ZOGs1TkE", "0-c2idA--3DTfygmYQ-rAPIg"),
     description:
-      "A child stands en la entrada de un local cerrado, paused between light and shadow. The street se hace en una sala de espera, where time passes and no pasa nada.",
+      "A child stands en la entrada de un local cerrado, paused between light and shadow.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p4",
@@ -237,17 +207,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZcW5vVWszZ0xoRnc",
-      "0-q_kQFpzc3MHz7PdqmdcOJg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZcW5vVWszZ0xoRnc",
-      "0-q_kQFpzc3MHz7PdqmdcOJg"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZcW5vVWszZ0xoRnc", "0-q_kQFpzc3MHz7PdqmdcOJg"),
+    image: driveImage("0BwmebwPL59fZcW5vVWszZ0xoRnc", "0-q_kQFpzc3MHz7PdqmdcOJg"),
     description:
-      "Police officers pasen inside a patrol car, paused and observing as la vida continúa alrededor.",
+      "Police officers pause inside a patrol car as la vida continúa alrededor.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p5",
@@ -258,17 +223,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZYmlRSlR2b21PVFU",
-      "0-nlcngwD9BVsO9c4ZEzUlsg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZYmlRSlR2b21PVFU",
-      "0-nlcngwD9BVsO9c4ZEzUlsg"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZYmlRSlR2b21PVFU", "0-nlcngwD9BVsO9c4ZEzUlsg"),
+    image: driveImage("0BwmebwPL59fZYmlRSlR2b21PVFU", "0-nlcngwD9BVsO9c4ZEzUlsg"),
     description:
-      "A street vendor pesa fruta en una balanza improvisada, while a passerby moves through the frame.",
+      "A street vendor pesa fruta en una balanza improvisada.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p6",
@@ -279,17 +239,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZcWZVZl9sUVd0eDA",
-      "0-d0VuHWbjPh4RrBhQus_I7Q"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZcWZVZl9sUVd0eDA",
-      "0-d0VuHWbjPh4RrBhQus_I7Q"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZcWZVZl9sUVd0eDA", "0-d0VuHWbjPh4RrBhQus_I7Q"),
+    image: driveImage("0BwmebwPL59fZcWZVZl9sUVd0eDA", "0-d0VuHWbjPh4RrBhQus_I7Q"),
     description:
-      "A man works dentro un carro between routes and work. The body folds inward, carrying el peso del dia, while the road le espera afuera.",
+      "A man pauses inside a car between routes and labor.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p7",
@@ -300,17 +255,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2024,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZR3JNV2ZfSWZ6Mmc",
-      "0-ala5VykvDwH7mP-5PlHk-w"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZR3JNV2ZfSWZ6Mmc",
-      "0-ala5VykvDwH7mP-5PlHk-w"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZR3JNV2ZfSWZ6Mmc", "0-ala5VykvDwH7mP-5PlHk-w"),
+    image: driveImage("0BwmebwPL59fZR3JNV2ZfSWZ6Mmc", "0-ala5VykvDwH7mP-5PlHk-w"),
     description:
-      "Un viejito sits along la acera, taking a brief rest between work and movement. The body pauses against the wall, while la calle sigue adelante.",
+      "Un viejito rests against la acera before continuing on.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p8",
@@ -321,17 +271,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZZV9sN1UxN0F6dmc",
-      "0-DbcYm4TMdIO6fGzfAqN4gg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZZV9sN1UxN0F6dmc",
-      "0-DbcYm4TMdIO6fGzfAqN4gg"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZZV9sN1UxN0F6dmc", "0-DbcYm4TMdIO6fGzfAqN4gg"),
+    image: driveImage("0BwmebwPL59fZZV9sN1UxN0F6dmc", "0-DbcYm4TMdIO6fGzfAqN4gg"),
     description:
-      "A bus driver pauses at the window, trabajando while the route continues.",
+      "A bus driver pauses at the window as the route continues.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p9",
@@ -342,17 +287,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2023,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZVUE5Qk55NzJ6em8",
-      "0-UtKc6BzYX5-luQpfJalUDg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZVUE5Qk55NzJ6em8",
-      "0-UtKc6BzYX5-luQpfJalUDg"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZVUE5Qk55NzJ6em8", "0-UtKc6BzYX5-luQpfJalUDg"),
+    image: driveImage("0BwmebwPL59fZVUE5Qk55NzJ6em8", "0-UtKc6BzYX5-luQpfJalUDg"),
     description:
-      "A child stands en la calle holding a bat, paused between play and waiting. The street becomes un espacio de juego, shaped by imagination and everyday life.",
+      "A child waits in the street between play and stillness.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p10",
@@ -363,17 +303,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZX09CNC0zZ2xyVnM",
-      "0-4posO9UUyIgVsxmcbHm0Hw"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZX09CNC0zZ2xyVnM",
-      "0-4posO9UUyIgVsxmcbHm0Hw"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZX09CNC0zZ2xyVnM", "0-4posO9UUyIgVsxmcbHm0Hw"),
+    image: driveImage("0BwmebwPL59fZX09CNC0zZ2xyVnM", "0-4posO9UUyIgVsxmcbHm0Hw"),
     description:
-      "Two young men play fútbol en una cancha improvisada, moving across open ground. The city frames the action, while play becomes practice for ritmo, espacio y seguir adelante.",
+      "Two young men play fútbol en una cancha improvisada.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p11",
@@ -384,16 +319,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZTHJzRFZpejVZTWs",
-      "0-GLZsGQ6s7-NdtVuN9RP2gg"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZTHJzRFZpejVZTWs",
-      "0-GLZsGQ6s7-NdtVuN9RP2gg"
-    ),
-    description: "Two people wait en la banca, as the city speaks around them.",
+    imageSrcs: driveUrls("0BwmebwPL59fZTHJzRFZpejVZTWs", "0-GLZsGQ6s7-NdtVuN9RP2gg"),
+    image: driveImage("0BwmebwPL59fZTHJzRFZpejVZTWs", "0-GLZsGQ6s7-NdtVuN9RP2gg"),
+    description:
+      "Two people wait en la banca mientras la ciudad sigue.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p12",
@@ -404,17 +335,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZUXNPUXJUQ09nWTQ",
-      "0-wWq9CqejFXJt-x7FKOQfBA"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZUXNPUXJUQ09nWTQ",
-      "0-wWq9CqejFXJt-x7FKOQfBA"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZUXNPUXJUQ09nWTQ", "0-wWq9CqejFXJt-x7FKOQfBA"),
+    image: driveImage("0BwmebwPL59fZUXNPUXJUQ09nWTQ", "0-wWq9CqejFXJt-x7FKOQfBA"),
     description:
-      "Un clásico que sigue rodando por las calles, full of history, orgullo y timeless vibes.",
+      "Un clásico rodando por las calles, lleno de historia.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p13",
@@ -425,17 +351,12 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZQmp5U0MtYlMxeUU",
-      "0-yXzrR_VHI9wd6-g6fB5gig"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZQmp5U0MtYlMxeUU",
-      "0-yXzrR_VHI9wd6-g6fB5gig"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZQmp5U0MtYlMxeUU", "0-yXzrR_VHI9wd6-g6fB5gig"),
+    image: driveImage("0BwmebwPL59fZQmp5U0MtYlMxeUU", "0-yXzrR_VHI9wd6-g6fB5gig"),
     description:
-      "Clásicos alienadoes en la calle, each one con su propio flow y decades of history shining through chrome and color.",
+      "Colores vivos que siguen brillando a través del tiempo.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
   {
     id: "p14",
@@ -446,20 +367,13 @@ const CHECKOUT_TEMPLATE = {
     edition: "Limited",
     inStock: true,
     year: 2014,
-    imageSrcs: driveUrls(
-      "0BwmebwPL59fZTll1Q0kyRVR0WE0",
-      "0-gxlp3Xh0CzQto-k2TKJnsw"
-    ),
-    image: driveImage(
-      "0BwmebwPL59fZTll1Q0kyRVR0WE0",
-      "0-gxlp3Xh0CzQto-k2TKJnsw"
-    ),
+    imageSrcs: driveUrls("0BwmebwPL59fZTll1Q0kyRVR0WE0", "0-gxlp3Xh0CzQto-k2TKJnsw"),
+    image: driveImage("0BwmebwPL59fZTll1Q0kyRVR0WE0", "0-gxlp3Xh0CzQto-k2TKJnsw"),
     description:
-      "la vida sigue su ritmo mientras la historia observa -- un contraste poderoso entre the present and the eternal.",
+      "La vida cotidiana avanza mientras la historia observa.",
     shipping: "Ships flat with protective packaging.",
+    checkoutLinks: CHECKOUT_TEMPLATE,
   },
-];
-
 const SERIES = ["All", ...Array.from(new Set(PRODUCTS.map((p) => p.series)))];
 
 function formatUSD(amount) {
