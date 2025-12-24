@@ -134,7 +134,21 @@ function WatermarkedImg({
 // ---------------------------------------------------------------------------
 // Products
 // ---------------------------------------------------------------------------
-const PRODUCTS = [
+const CHECKOUT_TEMPLATE = {
+  "8×10": {
+    "Print (Flat)": "",
+    "Framed Print": "",
+  },
+  "11×14": {
+    "Print (Flat)": "",
+    "Framed Print": "",
+  },
+  "16×20": {
+    "Print (Flat)": "",
+    "Framed Print": "",
+  },
+};
+
   {
     id: "p1",
     title: "silencio en la sala",
