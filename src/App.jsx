@@ -156,7 +156,21 @@ const PRODUCTS = [
       "Un grupo de estudiantes rehearse in silence, focused en la disciplina del cuerpo y la repetición del gesto. La imagen observa stillness within movement y la atención compartida que construye el espacio.",
     shipping: "Ships flat with protective packaging.",
     // Add Stripe links here later:
-    // checkoutLinks: { "8×10": { "Print (Flat)": "...", "Framed Print": "..." }, ... }
+    // checkoutLinks: {
+  "8×10": {
+    "Print (Flat)": "https://buy.stripe.com/6oU4gz42ift1acjdG36kg09",
+    "Framed Print": "https://buy.stripe.com/cNiaEX1Uaa8H1FNgSf6kg07",
+  },
+  "11×14": {
+    "Print (Flat)": "https://buy.stripe.com/6oUfZh1Ua3Kj70759x6kg06",
+    "Framed Print": "https://buy.stripe.com/7sY6oHcyO3Kjckr1Xl6kg05",
+  },
+  "16×20": {
+    "Print (Flat)": "https://buy.stripe.com/7sYfZhaqG2Gf1FN9pN6kg03",
+    "Framed Print": " https://buy.stripe.com/6oUbJ11Ua80zfwD45t6kg01",
+  },
+},
+
   },
   {
     id: "p2",
